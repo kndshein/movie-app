@@ -10,7 +10,7 @@ This assignment shouldn't require hundreds of lines of code. The important thing
 
 *Note: The below instructions assume Windows, but everything should work equally well on OS X or Linux, since these are all cross-platform technologies.*
 
-* [Download](http://nodejs.org/download/) & install node 32-bit, if you haven't already (64-bit is ok, but we recommend 32-bit because it has fewer prerequisites for building native addon modules on Windows)
+* [Download](http://nodejs.org/download/) & install node 32-bit (preferably v12.x.x), if you haven't already (64-bit is ok, but we recommend 32-bit because it has fewer prerequisites for building native addon modules on Windows)
 * `git clone https://github.com/CSNW/movie-app.git`
 * `npm install` (this will pull down all dependencies)
 
