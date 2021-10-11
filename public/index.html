@@ -1,12 +1,35 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-  <title>Movie App</title>
-  <script src="vendor/jquery-2.1.0.js"></script>
-  <script src="vendor/underscore.js"></script>
-  <script src="vendor/backbone.js"></script>
-  <script src="movie-app.js"></script>
-</head>
-<body>
-</body>
+  <head>
+    <title>Movie App</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <script src="vendor/jquery-2.1.0.js"></script>
+    <script src="vendor/underscore.js"></script>
+    <script src="vendor/backbone.js"></script>
+    <script src="movie-app.js"></script>
+  </head>
+  <body>
+    <h1>Movie App</h1>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Genres</th>
+        </tr>
+      </thead>
+      <tbody class="movies-list">
+        <tr>
+          <td>HeHE</td>
+        </tr>
+      </tbody>
+    </table>
+    <script type="text/template" class="movie-item-template">
+      <td><span class="name"><%= name %></span></td>
+    </script>
+  </body>
 </html>
