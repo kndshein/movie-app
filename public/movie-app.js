@@ -1,4 +1,4 @@
-var Movie = Backbone.Model.extend({
+let Movie = Backbone.Model.extend({
   urlRoot: "/movies",
   idAttribute: "pk",
   defaults: {
@@ -6,15 +6,15 @@ var Movie = Backbone.Model.extend({
   },
 });
 
-var Movies = Backbone.Collection.extend({
+let Movies = Backbone.Collection.extend({
   url: "/movies",
   model: Movie,
 });
 
-var movies = new Movies();
+let movies = new Movies();
 
 $(document).ready(function () {
-  var MovieItemView = Backbone.View.extend({
+  let MovieItemView = Backbone.View.extend({
     model: new Movie(),
     tagName: "tr",
     initialize: function () {
@@ -26,12 +26,13 @@ $(document).ready(function () {
     },
   });
 
-  var MoviesListView = Backbone.View.extend({
+  let MoviesListView = Backbone.View.extend({
     model: movies,
     el: $(".movies-list"),
     initialize: function () {
       this.model.on("add", this.render, this);
       this.model.fetch({
+        // initializes the View by doing an AJAX call. Note that even though nothing is being done to the data in `success` and `error`, the data is stored
         success: function (response) {
           _.each(response.toJSON(), function (movie) {
             console.log("Successfully GOT movie with _id: " + movie.name);
@@ -43,8 +44,8 @@ $(document).ready(function () {
       });
     },
     render: function () {
-      var self = this;
-      console.log(this.model);
+      let self = this;
+      this.$el.html(""); // clears the html before each re-render
       _.each(this.model.toArray(), function (movie) {
         self.$el.append(new MovieItemView({ model: movie }).render().$el);
       });
@@ -52,7 +53,7 @@ $(document).ready(function () {
     },
   });
 
-  var moviesListView = new MoviesListView();
+  let moviesListView = new MoviesListView();
 
   // Backbone App setup here
 });
