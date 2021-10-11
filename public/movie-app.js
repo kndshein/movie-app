@@ -32,21 +32,32 @@ $(document).ready(function () {
     },
     events: {
       "click .edit": "edit",
+      "click .update": "update",
       "click .cancel": "cancel",
       "click .delete": "delete",
     },
     edit: function () {
-      $(".edit").hide();
-      $(".delete").hide();
-      $(".update").show();
-      $(".cancel").show();
+      this.$(".edit").hide();
+      this.$(".delete").hide();
+      this.$(".update").show();
+      this.$(".cancel").show();
+
+      let name = this.$(".name").html();
+
+      this.$(".name").html(
+        '<input type="text" class="form-control name-update" value="' +
+          name +
+          '">'
+      );
     },
+    update: function () {},
     cancel: function () {
       moviesListView.render();
       //* This seems to re-render the entire list of movies - perhaps I could use an ID to target the specific item?
     },
     delete: function () {
       this.model.destroy({
+        // Backbone.js seems to auto target movie ids based on urlRoot and idAttribute
         success: function (response) {
           console.log(response);
           moviesListView.render();
@@ -81,7 +92,7 @@ $(document).ready(function () {
           });
         },
         error: function () {
-          console.log("Failed to get movies!");
+          throw new Error();
         },
       });
     },
@@ -107,7 +118,7 @@ $(document).ready(function () {
         $(".name-input").val("");
       },
       error: function () {
-        console.log("Add movie unsuccessful.");
+        throw new Error();
       },
     });
   });
