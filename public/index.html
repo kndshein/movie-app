@@ -22,12 +22,24 @@
           <th>Genres</th>
           <th>Buttons</th>
         </tr>
+        <tr>
+          <td><input class="form-control name-input" /></td>
+          <td><input class="form-control genre-input" /></td>
+          <td>
+            <button type="button" class="btn btn-primary add-movie">Add</button>
+          </td>
+        </tr>
       </thead>
       <tbody class="movies-list"></tbody>
     </table>
     <script type="text/template" class="movie-item-template">
       <td><span class="name"><%= name %></span></td>
       <td><span class="genre"><%= genres %></span></td>
+      <td>
+        <button type="button" class="btn btn-primary edit">Edit</button>
+        <button type="button" class="btn btn-warning update" style="display: none">Update</button>
+        <button type="button" class="btn btn-secondary cancel" style="display: none">Cancel</button>
+      </td>
     </script>
   </body>
 </html>

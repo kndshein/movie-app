@@ -1,6 +1,19 @@
+let genres = {};
+const fetchGenres = async () => {
+  const response = await fetch("http://localhost:3000/genres");
+  const data = await response.json();
+  data.map((ele) => {
+    genres[ele.pk] = ele.name;
+  });
+};
+
 let Movie = Backbone.Model.extend({
   urlRoot: "/movies",
   idAttribute: "pk",
+  defaults: {
+    name: "",
+    genre_fks: [],
+  },
 });
 
 let Movies = Backbone.Collection.extend({
@@ -11,21 +24,21 @@ let Movies = Backbone.Collection.extend({
 let movies = new Movies();
 
 $(document).ready(function () {
-  let genres = {};
-  fetch("http://localhost:3000/genres")
-    .then((response) => response.json())
-    .then((data) =>
-      data.map((ele) => {
-        genres[ele.pk] = ele.name;
-      })
-    );
-
   let MovieItemView = Backbone.View.extend({
     model: new Movie(),
     tagName: "tr",
     initialize: function () {
       this.template = _.template($(".movie-item-template").html());
     },
+    events: {
+      "click .edit": "edit",
+    },
+    edit: function () {
+      $(".edit").hide();
+      $(".update").show();
+      $(".cancel").show();
+    },
+    cancel: function () {},
     render: function () {
       this.model = this.model.toJSON();
       this.model.genres = [];
@@ -41,8 +54,9 @@ $(document).ready(function () {
   let MoviesListView = Backbone.View.extend({
     model: movies,
     el: $(".movies-list"),
-    initialize: function () {
+    initialize: async function () {
       this.model.on("add", this.render, this);
+      await fetchGenres();
       this.model.fetch({
         // initializes the View by doing an AJAX call. Note that even though nothing is being done to the data in `success` and `error` apart from merely console logging , the data is stored
         success: function (response) {
@@ -67,5 +81,19 @@ $(document).ready(function () {
 
   let moviesListView = new MoviesListView();
 
+  $(".add-movie").on("click", function () {
+    var movie = new Movie({
+      name: $(".name-input").val(),
+    });
+    movies.add(movie);
+    movie.save(null, {
+      success: function (response) {
+        console.log(response);
+      },
+      error: function () {
+        console.log("Add movie unsuccessful.");
+      },
+    });
+  });
   // Backbone App setup here
 });
