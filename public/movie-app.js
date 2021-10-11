@@ -32,21 +32,38 @@ $(document).ready(function () {
     },
     events: {
       "click .edit": "edit",
+      "click .cancel": "cancel",
+      "click .delete": "delete",
     },
     edit: function () {
       $(".edit").hide();
+      $(".delete").hide();
       $(".update").show();
       $(".cancel").show();
     },
-    cancel: function () {},
+    cancel: function () {
+      moviesListView.render();
+      //* This seems to re-render the entire list of movies - perhaps I could use an ID to target the specific item?
+    },
+    delete: function () {
+      this.model.destroy({
+        success: function (response) {
+          console.log(response);
+          moviesListView.render();
+        },
+        error: function () {
+          throw new Error();
+        },
+      });
+    },
     render: function () {
-      this.model = this.model.toJSON();
-      this.model.genres = [];
-      if (this.model.genre_fks)
-        this.model.genre_fks.map((ele) => {
-          this.model.genres.push(genres[ele]);
+      console.log("MovieItemView render count");
+      this.model.attributes.genres = [];
+      if (this.model.attributes.genre_fks)
+        this.model.attributes.genre_fks.map((ele) => {
+          this.model.attributes.genres.push(genres[ele]);
         });
-      this.$el.html(this.template(this.model));
+      this.$el.html(this.template(this.model.toJSON()));
       return this;
     },
   });
@@ -58,7 +75,6 @@ $(document).ready(function () {
       this.model.on("add", this.render, this);
       await fetchGenres();
       this.model.fetch({
-        // initializes the View by doing an AJAX call. Note that even though nothing is being done to the data in `success` and `error` apart from merely console logging , the data is stored
         success: function (response) {
           _.each(response.toJSON(), function (movie) {
             console.log("Successfully GOT movie with _id: " + movie.name);
@@ -88,7 +104,7 @@ $(document).ready(function () {
     movies.add(movie);
     movie.save(null, {
       success: function (response) {
-        console.log(response);
+        $(".name-input").val("");
       },
       error: function () {
         console.log("Add movie unsuccessful.");
