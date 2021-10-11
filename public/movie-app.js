@@ -2,53 +2,57 @@ var Movie = Backbone.Model.extend({
   urlRoot: "/movies",
   idAttribute: "pk",
   defaults: {
-    name: "",
-    // genre_fks: [],
+    name: "defaultName",
   },
 });
 
 var Movies = Backbone.Collection.extend({
-  url: "http://localhost:3000/movies",
+  url: "/movies",
   model: Movie,
 });
 
 var movies = new Movies();
 
-var MovieItemView = Backbone.View.extend({
-  model: new Movie(),
-  tagName: "td",
-  initialize: function () {
-    this.template = _.template($(".movie-item-template").html());
-    this.render();
-  },
-  render: function () {
-    this.$el.html(this.template(this.model));
-    console.log(this.$el);
-    return this;
-  },
-});
-
-var MoviesListView = Backbone.View.extend({
-  model: movies,
-  el: $(".movies-list"),
-  initialize: function () {
-    this.render();
-  },
-  render: function () {
-    var self = this;
-    console.log("hoho", this.$el);
-    this.model.fetch().then((response) => {
-      _.each(response, function (movie) {
-        console.log("hehe", new MovieItemView({ model: movie }).el);
-        self.$el.append("<p>Test</p>");
-      });
-    });
-    return this;
-  },
-});
-
-var moviesListView = new MoviesListView();
-
 $(document).ready(function () {
+  var MovieItemView = Backbone.View.extend({
+    model: new Movie(),
+    tagName: "tr",
+    initialize: function () {
+      this.template = _.template($(".movie-item-template").html());
+    },
+    render: function () {
+      this.$el.html(this.template(this.model.toJSON()));
+      return this;
+    },
+  });
+
+  var MoviesListView = Backbone.View.extend({
+    model: movies,
+    el: $(".movies-list"),
+    initialize: function () {
+      this.model.on("add", this.render, this);
+      this.model.fetch({
+        success: function (response) {
+          _.each(response.toJSON(), function (movie) {
+            console.log("Successfully GOT movie with _id: " + movie.name);
+          });
+        },
+        error: function () {
+          console.log("Failed to get movies!");
+        },
+      });
+    },
+    render: function () {
+      var self = this;
+      console.log(this.model);
+      _.each(this.model.toArray(), function (movie) {
+        self.$el.append(new MovieItemView({ model: movie }).render().$el);
+      });
+      return this;
+    },
+  });
+
+  var moviesListView = new MoviesListView();
+
   // Backbone App setup here
 });
