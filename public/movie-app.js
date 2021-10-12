@@ -29,6 +29,7 @@ $(document).ready(function () {
     tagName: "tr",
     initialize: function () {
       this.template = _.template($(".movie-item-template").html());
+      this.genreTemplate = _.template($(".genres-list-template").html());
     },
     events: {
       "click .edit": "edit",
@@ -50,7 +51,17 @@ $(document).ready(function () {
           '">'
       );
     },
-    update: function () {},
+    update: function () {
+      this.model.set("name", $(".name-update").val());
+      this.model.save({
+        success: function (response) {
+          console.log(response);
+        },
+        error: function () {
+          throw new Error();
+        },
+      });
+    },
     cancel: function () {
       moviesListView.render();
       //* This seems to re-render the entire list of movies - perhaps I could use an ID to target the specific item?
@@ -69,12 +80,16 @@ $(document).ready(function () {
     },
     render: function () {
       console.log("MovieItemView render count");
+      let that = this;
       this.model.attributes.genres = [];
       if (this.model.attributes.genre_fks)
         this.model.attributes.genre_fks.map((ele) => {
           this.model.attributes.genres.push(genres[ele]);
         });
-      this.$el.html(this.template(this.model.toJSON()));
+      this.$el.html(this.template({ name: this.model.toJSON().name }));
+      _.each(this.model.toJSON().genres, function (genre) {
+        that.$(".genres-list").append(that.genreTemplate({ genre }));
+      });
       return this;
     },
   });
@@ -83,12 +98,12 @@ $(document).ready(function () {
     model: movies,
     el: $(".movies-list"),
     initialize: async function () {
-      this.model.on("add", this.render, this);
+      this.model.on("sync", this.render, this);
       await fetchGenres();
       this.model.fetch({
         success: function (response) {
           _.each(response.toJSON(), function (movie) {
-            console.log("Successfully GOT movie with _id: " + movie.name);
+            console.log("Successfully GOT movie: " + movie.name);
           });
         },
         error: function () {
@@ -97,10 +112,10 @@ $(document).ready(function () {
       });
     },
     render: function () {
-      let self = this;
+      let that = this;
       this.$el.html(""); // clears the html before each re-render
       _.each(this.model.toArray(), function (movie) {
-        self.$el.append(new MovieItemView({ model: movie }).render().$el);
+        that.$el.append(new MovieItemView({ model: movie }).render().$el);
       });
       return this;
     },
@@ -113,8 +128,8 @@ $(document).ready(function () {
       name: $(".name-input").val(),
     });
     movies.add(movie);
-    movie.save(null, {
-      success: function (response) {
+    movie.save({
+      success: function () {
         $(".name-input").val("");
       },
       error: function () {
