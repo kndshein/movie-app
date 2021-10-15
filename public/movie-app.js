@@ -1,9 +1,9 @@
-let genres = {};
+let genres_hash = {};
 const fetchGenres = async () => {
   const response = await fetch("http://localhost:3000/genres");
   const data = await response.json();
   data.map((ele) => {
-    genres[ele.pk] = ele.name;
+    genres_hash[ele.pk] = ele.name;
   });
 };
 
@@ -29,7 +29,6 @@ $(document).ready(function () {
     tagName: "tr",
     initialize: function () {
       this.template = _.template($(".movie-item-template").html());
-      this.genreTemplate = _.template($(".genres-list-template").html());
     },
     events: {
       "click .edit": "edit",
@@ -80,27 +79,24 @@ $(document).ready(function () {
     },
     render: function () {
       console.log("MovieItemView render count");
-      let that = this;
-      this.model.attributes.genres = [];
-      if (this.model.attributes.genre_fks)
-        this.model.attributes.genre_fks.map((ele) => {
-          this.model.attributes.genres.push(genres[ele]);
-        });
-      this.$el.html(this.template({ name: this.model.toJSON().name }));
-      _.each(this.model.toJSON().genres, function (genre) {
-        that.$(".genres-list").append(that.genreTemplate({ genre }));
-      });
+      this.$el.html(
+        this.template({
+          name: this.model.toJSON().name,
+          genres_hash: genres_hash,
+          genre_fks: this.model.get("genre_fks") || [],
+        })
+      );
       return this;
     },
   });
 
   let MoviesListView = Backbone.View.extend({
-    model: movies,
+    coll: movies,
     el: $(".movies-list"),
     initialize: async function () {
-      this.model.on("sync", this.render, this);
+      this.coll.on("sync", this.render, this);
       await fetchGenres();
-      this.model.fetch({
+      this.coll.fetch({
         success: function (response) {
           _.each(response.toJSON(), function (movie) {
             console.log("Successfully GOT movie: " + movie.name);
@@ -114,7 +110,7 @@ $(document).ready(function () {
     render: function () {
       let that = this;
       this.$el.html(""); // clears the html before each re-render
-      _.each(this.model.toArray(), function (movie) {
+      _.each(this.coll.toArray(), function (movie) {
         that.$el.append(new MovieItemView({ model: movie }).render().$el);
       });
       return this;
@@ -126,6 +122,7 @@ $(document).ready(function () {
   $(".add-movie").on("click", function () {
     var movie = new Movie({
       name: $(".name-input").val(),
+      genres: $(".genre-input").val(),
     });
     movies.add(movie);
     movie.save({
@@ -137,5 +134,4 @@ $(document).ready(function () {
       },
     });
   });
-  // Backbone App setup here
 });

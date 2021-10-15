@@ -24,7 +24,14 @@
         </tr>
         <tr>
           <td><input class="form-control name-input" /></td>
-          <td><input class="form-control genre-input" /></td>
+          <td>
+            <select class="genre-input" name="cars" id="cars" multiple>
+              <option value="volvo">Volvo</option>
+              <option value="saab">Saab</option>
+              <option value="opel">Opel</option>
+              <option value="audi">Audi</option>
+            </select>
+          </td>
           <td>
             <button type="button" class="btn btn-primary add-movie">Add</button>
           </td>
@@ -34,16 +41,17 @@
     </table>
     <script type="text/template" class="movie-item-template">
       <td><span class="name"><%= name %></span></td>
-      <td class="genres-list"></td>
+      <td class="genres-list">
+        <% for (let genre_pk of genre_fks) { %>
+          <span class="genre" style="background-color: #d1d1d1; padding: 5px 10px; border-radius: 5px; margin-right: 5px;"><%= genres_hash[genre_pk] %></span>
+        <% } %>
+      </td>
       <td>
         <button type="button" class="btn btn-info edit">Edit</button>
         <button type="button" class="btn btn-danger delete">Delete</button>
         <button type="button" class="btn btn-warning update" style="display: none">Update</button>
         <button type="button" class="btn btn-secondary cancel" style="display: none">Cancel</button>
       </td>
-    </script>
-    <script type="text/template" class="genres-list-template">
-      <span class="genre" style="background-color: #d1d1d1; padding: 5px 10px; border-radius: 5px; margin-right: 5px;"><%= genre %></span>
     </script>
   </body>
 </html>
